@@ -1,320 +1,284 @@
+# Web V4 BackEnd - TypeScript
 
-# Web V4 BackEnd 
+## 🎯 Portafolio Profesional Backend
 
-
-## Portafolio Profesional
 **Alexi Durán Gómez**  
-Back-End Documentation  
-Bucaramanga, CAJASAN  
-31 de Octubre de 2025
+Backend Documentation con TypeScript  
+Bucaramanga, CAJASAN
 
 ---
 
-## Tabla de Contenidos
+## 📋 Tabla de Contenidos
 
-1. [Introducción](#introducción)
-2. [Caso de Estudio](#caso-de-estudio)
-3. [Planificación](#planificación)
-   - [Arquitectura del Sistema](#arquitectura-del-sistema)
-   - [Stack Tecnológico](#stack-tecnológico)
-   - [Estructura del Proyecto](#estructura-del-proyecto)
-   - [Modelo de Datos](#modelo-de-datos)
-4. [Endpoints de la API](#endpoints-de-la-api)
-5. [Configuración e Instalación](#configuración-e-instalación)
-6. [Seguridad](#seguridad)
+1. [Características](#características)
+2. [Stack Tecnológico](#stack-tecnológico)
+3. [Instalación](#instalación)
+4. [Estructura del Proyecto](#estructura-del-proyecto)
+5. [API Endpoints](#api-endpoints)
+6. [Scripts Disponibles](#scripts-disponibles)
 7. [Despliegue](#despliegue)
 
 ---
 
-## Introducción
+## ✨ Características
 
-Este documento describe la arquitectura y funcionamiento del backend del portafolio profesional. El sistema está diseñado como una API RESTful que gestiona y proporciona acceso a la información de proyectos y artículos de blog de manera eficiente y escalable.
-
-La API sigue el patrón arquitectónico Modelo-Vista-Controlador (MVC), lo que garantiza una separación clara de responsabilidades, facilita el mantenimiento del código y permite la escalabilidad futura del sistema. El backend actúa como intermediario entre el cliente frontend y la base de datos, exponiendo endpoints bien definidos para las operaciones CRUD.
-
-Este proyecto está desarrollado con tecnologías modernas del ecosistema JavaScript/Node.js, aprovechando la flexibilidad de MongoDB para el almacenamiento de datos y la robustez de Express para el manejo de peticiones HTTP.
-
----
-
-## Caso de Estudio
-
-### Problemática
-
-Los portafolios profesionales tradicionales suelen ser estáticos y difíciles de actualizar. Cada vez que se desea agregar un nuevo proyecto o artículo, es necesario modificar el código del frontend directamente, lo que resulta en un proceso tedioso y propenso a errores.
-
-### Solución Propuesta
-
-Este backend proporciona una capa de abstracción entre los datos del portafolio y su presentación. Al centralizar la información en una base de datos NoSQL en la nube (MongoDB Atlas), se logra:
-
-- **Gestión dinámica de contenido**: Agregar, editar o eliminar proyectos y blogs sin modificar el código del frontend.
-- **Escalabilidad**: La arquitectura permite agregar nuevas funcionalidades (certificaciones, experiencia laboral, testimonios) sin reestructurar el sistema completo.
-- **Disponibilidad**: Al utilizar MongoDB Atlas, los datos están disponibles desde cualquier ubicación con alta disponibilidad y respaldo automático.
-- **Separación de responsabilidades**: El frontend se enfoca únicamente en la presentación, mientras que el backend gestiona toda la lógica de negocio y acceso a datos.
-
-### Beneficios
-
-- Actualización de contenido en tiempo real
-- Mantenimiento simplificado
-- Base sólida para funcionalidades futuras
-- Mayor control sobre los datos del portafolio
+- ✅ TypeScript para type safety
+- ✅ API RESTful con Express 5
+- ✅ MongoDB Atlas como base de datos
+- ✅ Arquitectura por capas (Controller → Service → Database)
+- ✅ Manejo de errores centralizado
+- ✅ Validación de tipos en tiempo de compilación
+- ✅ Hot reload con nodemon
+- ✅ Patrón Singleton para conexión a BD
 
 ---
 
-## Planificación
+## 🛠 Stack Tecnológico
 
-### Arquitectura del Sistema
+### Backend
 
-El sistema implementa el patrón **MVC (Modelo-Vista-Controlador)** adaptado para una API REST:
+- **Node.js** - Runtime de JavaScript
+- **TypeScript 5.3+** - Superset tipado de JavaScript
+- **Express 5** - Framework web
+- **MongoDB** - Base de datos NoSQL
+- **ts-node** - Ejecutor TypeScript para desarrollo
 
-```
-Cliente (Frontend)
-       ↓
-    Router (Rutas)
-       ↓
-  Controller (Lógica de negocio)
-       ↓
-    Model (Esquemas y operaciones DB)
-       ↓
-  MongoDB Atlas (Base de datos)
-```
+### Herramientas
 
-**Componentes principales:**
-
-- **Modelos (Models)**: Definen la estructura de los datos y gestionan las operaciones con MongoDB mediante Mongoose.
-- **Controladores (Controllers)**: Contienen la lógica de negocio y procesan las peticiones HTTP.
-- **Rutas (Routes)**: Definen los endpoints disponibles y los asocian con los controladores correspondientes.
-- **Middlewares**: Gestionan aspectos transversales como autenticación, validación y manejo de errores.
-
-### Stack Tecnológico
-
-**Backend:**
-- **Node.js**: Entorno de ejecución JavaScript del lado del servidor
-- **Express.js**: Framework web minimalista y flexible para Node.js
-- **MongoDB**: Base de datos NoSQL orientada a documentos
-- **Mongoose**: ODM (Object Data Modeling) para MongoDB y Node.js
-
-**Infraestructura:**
-- **MongoDB Atlas**: Plataforma de base de datos en la nube
-- **Variables de entorno**: Gestión de configuración mediante archivos .env
-
-**Herramientas de desarrollo:**
-- **npm**: Gestor de paquetes
-- **nodemon**: Reinicio automático del servidor durante el desarrollo
-- **dotenv**: Carga de variables de entorno
-
-### Estructura del Proyecto
-
-```
-backend/
-│
-├── src/
-│   ├── config/
-│   │   └── database.js       # Configuración de conexión a MongoDB
-│   │
-│   ├── models/
-│   │   ├── Project.js        # Modelo de proyectos
-│   │   └── Blog.js           # Modelo de blogs
-│   │
-│   ├── controllers/
-│   │   ├── projectController.js
-│   │   └── blogController.js
-│   │
-│   ├── routes/
-│   │   ├── projectRoutes.js
-│   │   └── blogRoutes.js
-│   │
-│   ├── middlewares/
-│   │   ├── errorHandler.js   # Manejo centralizado de errores
-│   │   └── validator.js      # Validación de datos
-│   │
-│   └── app.js                # Configuración de Express
-│
-├── .env                      # Variables de entorno
-├── .gitignore
-├── package.json
-├── server.js                 # Punto de entrada de la aplicación
-└── README.md
-```
-
-### Modelo de Datos
-
-#### Esquema de Proyectos (Projects)
-
-```javascript
-{
-  title: String,           // Título del proyecto
-  description: String,     // Descripción detallada
-  technologies: [String],  // Array de tecnologías utilizadas
-  imageUrl: String,        // URL de la imagen principal
-  demoUrl: String,         // URL de la demo en vivo
-  repoUrl: String,         // URL del repositorio
-  featured: Boolean,       // Proyecto destacado
-  createdAt: Date,         // Fecha de creación
-  updatedAt: Date          // Fecha de última actualización
-}
-```
-
-#### Esquema de Blogs (Blogs)
-
-```javascript
-{
-  title: String,           // Título del artículo
-  content: String,         // Contenido completo del artículo
-  excerpt: String,         // Resumen corto
-  author: String,          // Nombre del autor
-  tags: [String],          // Etiquetas/categorías
-  imageUrl: String,        // Imagen destacada
-  published: Boolean,      // Estado de publicación
-  views: Number,           // Contador de vistas
-  createdAt: Date,         // Fecha de creación
-  updatedAt: Date          // Fecha de última actualización
-}
-```
+- **nodemon** - Auto-reload en desarrollo
+- **dotenv** - Gestión de variables de entorno
 
 ---
 
-## Endpoints de la API
-
-### Proyectos
-
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/api/projects` | Obtener todos los proyectos |
-| GET | `/api/projects/:id` | Obtener un proyecto específico |
-| POST | `/api/projects` | Crear un nuevo proyecto |
-| PUT | `/api/projects/:id` | Actualizar un proyecto |
-| DELETE | `/api/projects/:id` | Eliminar un proyecto |
-| GET | `/api/projects/featured` | Obtener proyectos destacados |
-
-### Blogs
-
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/api/blogs` | Obtener todos los artículos |
-| GET | `/api/blogs/:id` | Obtener un artículo específico |
-| POST | `/api/blogs` | Crear un nuevo artículo |
-| PUT | `/api/blogs/:id` | Actualizar un artículo |
-| DELETE | `/api/blogs/:id` | Eliminar un artículo |
-| GET | `/api/blogs/published` | Obtener artículos publicados |
-
----
-
-## Configuración e Instalación
+## 📦 Instalación
 
 ### Requisitos previos
 
-- Node.js (v14 o superior)
+- Node.js 18+
+- npm o yarn
 - Cuenta en MongoDB Atlas
-- Git
 
-### Pasos de instalación
+### Pasos
 
 1. **Clonar el repositorio**
+
 ```bash
 git clone <url-del-repositorio>
 cd backend
 ```
 
 2. **Instalar dependencias**
+
 ```bash
 npm install
 ```
 
 3. **Configurar variables de entorno**
 
-Crear un archivo `.env` en la raíz del proyecto:
-
-```env
-PORT=5000
-MONGODB_URI=mongodb+srv://<usuario>:<password>@cluster.mongodb.net/<database>
-NODE_ENV=development
+```bash
+cp .env.example .env
+# Editar .env con tus credenciales
 ```
 
-4. **Iniciar el servidor**
+4. **Ejecutar en desarrollo**
 
-Modo desarrollo:
 ```bash
 npm run dev
 ```
 
-Modo producción:
+5. **Compilar para producción**
+
 ```bash
+npm run build
 npm start
 ```
 
-5. **Verificar conexión**
+---
 
-El servidor debería estar corriendo en `http://localhost:5000`
+## 📁 Estructura del Proyecto
+
+```
+src/
+├── config/
+│   ├── config.ts              # Configuración general
+│   └── db/
+│       └── connection.ts      # Conexión MongoDB (Singleton)
+│
+├── types/
+│   └── models.ts              # Tipos e interfaces TypeScript
+│
+├── services/
+│   ├── blog.service.ts        # Lógica de negocio - Blogs
+│   └── project.service.ts     # Lógica de negocio - Projects
+│
+├── controllers/
+│   ├── blogs.controller.ts    # Controladores HTTP - Blogs
+│   └── projects.controller.ts # Controladores HTTP - Projects
+│
+├── routes/
+│   ├── blogs.routes.ts        # Rutas API - Blogs
+│   └── projects.routes.ts     # Rutas API - Projects
+│
+├── middlewares/
+│   ├── logger.middleware.ts   # Logging de requests
+│   └── error.middleware.ts    # Manejo de errores
+│
+└── index.ts                   # Punto de entrada
+```
 
 ---
 
-## Seguridad
+## 🌐 API Endpoints
 
-### Medidas implementadas
+### Blogs
 
-- **Variables de entorno**: Información sensible nunca está en el código fuente
-- **CORS**: Configuración de orígenes permitidos para peticiones
-- **Validación de datos**: Sanitización de entradas del usuario
-- **Manejo de errores**: Respuestas estandarizadas sin exposición de información sensible
+| Método | Endpoint                    | Descripción                     |
+| ------ | --------------------------- | ------------------------------- |
+| GET    | `/api/blogs/all`            | Obtener todos los blogs         |
+| GET    | `/api/blogs/published`      | Blogs publicados                |
+| GET    | `/api/blogs/search?q=query` | Buscar blogs                    |
+| GET    | `/api/blogs/:id`            | Blog por ID (incrementa vistas) |
+| POST   | `/api/blogs`                | Crear nuevo blog                |
+| PUT    | `/api/blogs/:id`            | Actualizar blog                 |
+| DELETE | `/api/blogs/:id`            | Eliminar blog                   |
 
-### Recomendaciones futuras
+#### Ejemplo de Request (POST)
 
-- Implementar autenticación JWT para endpoints de creación/edición
-- Rate limiting para prevenir abuso de la API
-- Encriptación de datos sensibles
-- Logs de auditoría
+```json
+{
+  "title": "Mi primer blog en TypeScript",
+  "content": "Contenido completo del blog...",
+  "excerpt": "Resumen corto",
+  "author": "Alexi Durán",
+  "tags": ["typescript", "nodejs"],
+  "imageUrl": "https://example.com/image.jpg",
+  "published": true
+}
+```
+
+### Projects
+
+| Método | Endpoint                          | Descripción                 |
+| ------ | --------------------------------- | --------------------------- |
+| GET    | `/api/projects/all`               | Obtener todos los proyectos |
+| GET    | `/api/projects/featured`          | Proyectos destacados        |
+| GET    | `/api/projects/search?tech=react` | Buscar por tecnología       |
+| GET    | `/api/projects/:id`               | Proyecto por ID             |
+| POST   | `/api/projects`                   | Crear nuevo proyecto        |
+| PUT    | `/api/projects/:id`               | Actualizar proyecto         |
+| DELETE | `/api/projects/:id`               | Eliminar proyecto           |
+
+#### Ejemplo de Request (POST)
+
+```json
+{
+  "title": "E-commerce con TypeScript",
+  "description": "Tienda online completa",
+  "technologies": ["TypeScript", "React", "Node.js"],
+  "imageUrl": "https://example.com/project.jpg",
+  "demoUrl": "https://demo.example.com",
+  "repoUrl": "https://github.com/user/repo",
+  "featured": true
+}
+```
+
+### Respuestas de la API
+
+Todas las respuestas siguen el formato:
+
+```typescript
+{
+  success: boolean;
+  data?: T;           // Datos solicitados
+  message?: string;   // Mensaje informativo
+  error?: string;     // Error si success: false
+}
+```
 
 ---
 
-## Despliegue
+## 📜 Scripts Disponibles
 
-### Opciones de despliegue
+```bash
+# Desarrollo con hot-reload
+npm run dev
 
-El backend puede ser desplegado en diversas plataformas:
+# Compilar TypeScript a JavaScript
+npm run build
 
-- **Heroku**: Solución simple con integración Git
-- **Vercel**: Ideal para proyectos Node.js
-- **Railway**: Alternativa moderna y fácil de usar
-- **AWS/Google Cloud/Azure**: Para mayor control y escalabilidad
+# Ejecutar versión compilada
+npm start
 
-### Consideraciones
-
-- Configurar variables de entorno en la plataforma de despliegue
-- Asegurar que la IP del servidor esté en la whitelist de MongoDB Atlas
-- Configurar el dominio y certificados SSL
-- Implementar monitoreo y logs
+# Limpiar carpeta dist
+npm run clean
+```
 
 ---
 
-## Conclusiones
+## 🚀 Despliegue
 
-Este backend proporciona una base sólida y escalable para el portafolio profesional. La arquitectura MVC facilita el mantenimiento y la adición de nuevas funcionalidades, mientras que el uso de MongoDB Atlas asegura disponibilidad y flexibilidad en el almacenamiento de datos.
+### Vercel
 
-El sistema está preparado para crecer con nuevas características como gestión de certificaciones, experiencia laboral, testimonios y más, manteniendo siempre la simplicidad y claridad del código.
+1. **Instalar Vercel CLI**
+
+```bash
+npm i -g vercel
+```
+
+2. **Desplegar**
+
+```bash
+npm run build
+vercel deploy --prod
+```
+
+### Otras plataformas
+
+El proyecto es compatible con:
+
+- Railway
+- Render
+- Heroku
+- AWS/Google Cloud/Azure
+
+**Notas importantes:**
+
+- Configura las variables de entorno en la plataforma
+- Asegúrate de que la IP esté en la whitelist de MongoDB Atlas
+- El comando de inicio debe ser: `node dist/index.js`
 
 ---
 
-To develop locally:
+## 🔒 Seguridad
 
-```
-npm install
-vc dev
-```
+- ✅ Variables de entorno para datos sensibles
+- ✅ Validación de ObjectId de MongoDB
+- ✅ Type safety con TypeScript
+- ✅ Manejo de errores robusto
+- ✅ CORS configurado
 
-```
-open http://localhost:3000
-```
+---
 
-To build locally:
+## 🎯 Próximas Mejoras
 
-```
-npm install
-vc build
-```
+- [ ] Autenticación JWT
+- [ ] Rate limiting
+- [ ] Validación con Zod o Joi
+- [ ] Tests unitarios con Jest
+- [ ] Documentación con Swagger
+- [ ] Cache con Redis
+- [ ] Upload de imágenes a S3
 
-To deploy:
+---
 
-```
-npm install
-vc deploy
-```
+## 📝 Licencia
+
+MIT
+
+---
+
+## 👤 Autor
+
+**Alexi Durán Gómez**  
+Bucaramanga, Colombia  
+[GitHub](https://github.com/tu-usuario) | [LinkedIn](https://linkedin.com/in/tu-perfil)

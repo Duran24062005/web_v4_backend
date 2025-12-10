@@ -1,3 +1,11 @@
+# Compiled output
+dist/
+build/
+*.js
+*.js.map
+*.d.ts
+!vercel.json
+
 # dev
 .yarn/
 !.yarn/releases
@@ -13,7 +21,9 @@ node_modules/
 
 # env
 .env
+.env.local
 .env.production
+.env.*.local
 
 # logs
 logs/
@@ -24,6 +34,11 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# testing
+coverage/
+.nyc_output/
+
 # misc
 .DS_Store
 .vercel
+*.pem
