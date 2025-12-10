@@ -1,5 +1,5 @@
 import { MongoClient, Db } from 'mongodb';
-import { config } from '../config.js';
+import config from '../config.js';
 
 class Database {
   private static instance: Database;

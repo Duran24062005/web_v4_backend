@@ -2,10 +2,9 @@ import { Request, Response } from 'express';
 import { ProjectService } from '../services/project.service.js';
 import { CreateProjectDTO, UpdateProjectDTO, ApiResponse, Project } from '../types/models.js';
 
-const projectService = new ProjectService();
-
 export const getAllProjects = async (_req: Request, res: Response): Promise<void> => {
   try {
+    const projectService = new ProjectService();
     const projects = await projectService.getAllProjects();
     const response: ApiResponse<Project[]> = {
       success: true,
@@ -23,6 +22,7 @@ export const getAllProjects = async (_req: Request, res: Response): Promise<void
 
 export const getFeaturedProjects = async (_req: Request, res: Response): Promise<void> => {
   try {
+    const projectService = new ProjectService();
     const projects = await projectService.getFeaturedProjects();
     const response: ApiResponse<Project[]> = {
       success: true,
@@ -40,6 +40,7 @@ export const getFeaturedProjects = async (_req: Request, res: Response): Promise
 
 export const getProjectById = async (req: Request, res: Response): Promise<void> => {
   try {
+    const projectService = new ProjectService();
     const project = await projectService.getProjectById(req.params.id);
     
     if (!project) {
@@ -67,6 +68,7 @@ export const getProjectById = async (req: Request, res: Response): Promise<void>
 
 export const createProject = async (req: Request, res: Response): Promise<void> => {
   try {
+    const projectService = new ProjectService();
     const projectData: CreateProjectDTO = req.body;
     const newProject = await projectService.createProject(projectData);
     
@@ -87,6 +89,7 @@ export const createProject = async (req: Request, res: Response): Promise<void> 
 
 export const updateProject = async (req: Request, res: Response): Promise<void> => {
   try {
+    const projectService = new ProjectService();
     const updateData: UpdateProjectDTO = req.body;
     const updatedProject = await projectService.updateProject(req.params.id, updateData);
     
@@ -116,6 +119,7 @@ export const updateProject = async (req: Request, res: Response): Promise<void> 
 
 export const deleteProject = async (req: Request, res: Response): Promise<void> => {
   try {
+    const projectService = new ProjectService();
     const deleted = await projectService.deleteProject(req.params.id);
     
     if (!deleted) {
@@ -143,6 +147,7 @@ export const deleteProject = async (req: Request, res: Response): Promise<void> 
 
 export const getProjectsByTechnology = async (req: Request, res: Response): Promise<void> => {
   try {
+    const projectService = new ProjectService();
     const tech = req.query.tech as string;
     
     if (!tech) {

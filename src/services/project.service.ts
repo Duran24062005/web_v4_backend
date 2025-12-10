@@ -1,21 +1,21 @@
 import { Collection, ObjectId } from 'mongodb';
 import Database from '../config/db/connection.js';
-import { Project, CreateProjectDTO, UpdateProjectDTO } from '../types/models';
+import { Project, CreateProjectDTO, UpdateProjectDTO } from '../types/models.js';
 
 export class ProjectService {
-  private collection: Collection<Project>;
-
-  constructor() {
+  private getCollection(): Collection<Project> {
     const db = Database.getInstance().getDb();
-    this.collection = db.collection<Project>('projects');
+    return db.collection<Project>('projects');
   }
 
   async getAllProjects(): Promise<Project[]> {
-    return await this.collection.find().sort({ createdAt: -1 }).toArray();
+    const collection = this.getCollection();
+    return await collection.find().sort({ createdAt: -1 }).toArray();
   }
 
   async getFeaturedProjects(): Promise<Project[]> {
-    return await this.collection
+    const collection = this.getCollection();
+    return await collection
       .find({ featured: true })
       .sort({ createdAt: -1 })
       .toArray();
@@ -25,17 +25,19 @@ export class ProjectService {
     if (!ObjectId.isValid(id)) {
       return null;
     }
-    return await this.collection.findOne({ _id: new ObjectId(id) });
+    const collection = this.getCollection();
+    return await collection.findOne({ _id: new ObjectId(id) });
   }
 
   async createProject(projectData: CreateProjectDTO): Promise<Project> {
+    const collection = this.getCollection();
     const newProject: Project = {
       ...projectData,
       createdAt: new Date(),
       updatedAt: new Date()
     };
 
-    const result = await this.collection.insertOne(newProject);
+    const result = await collection.insertOne(newProject);
     return { ...newProject, _id: result.insertedId };
   }
 
@@ -44,7 +46,8 @@ export class ProjectService {
       return null;
     }
 
-    const result = await this.collection.findOneAndUpdate(
+    const collection = this.getCollection();
+    const result = await collection.findOneAndUpdate(
       { _id: new ObjectId(id) },
       { 
         $set: { 
@@ -63,12 +66,14 @@ export class ProjectService {
       return false;
     }
 
-    const result = await this.collection.deleteOne({ _id: new ObjectId(id) });
+    const collection = this.getCollection();
+    const result = await collection.deleteOne({ _id: new ObjectId(id) });
     return result.deletedCount > 0;
   }
 
   async getProjectsByTechnology(technology: string): Promise<Project[]> {
-    return await this.collection
+    const collection = this.getCollection();
+    return await collection
       .find({ technologies: { $in: [new RegExp(technology, 'i')] } })
       .toArray();
   }

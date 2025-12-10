@@ -1,5 +1,5 @@
 import express, { Application } from 'express';
-import { config } from './config/config.js';
+import config from './config/config.js';
 import Database from './config/db/connection.js';
 import blogRouter from './routes/blogs.routes.js';
 import projectRouter from './routes/projects.routes.js';

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { BlogService } from '../services/blog.service';
-import { CreateBlogDTO, UpdateBlogDTO, ApiResponse, Blog } from '../types/models';
+import { BlogService } from '../services/blog.service.js';
+import { CreateBlogDTO, UpdateBlogDTO, ApiResponse, Blog } from '../types/models.js';
 
 const blogService = new BlogService();
 

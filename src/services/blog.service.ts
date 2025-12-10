@@ -1,21 +1,21 @@
 import { Collection, ObjectId } from 'mongodb';
-import Database from '../config/db/connection';
-import { Blog, CreateBlogDTO, UpdateBlogDTO } from '../types/models';
+import Database from '../config/db/connection.js';
+import { Blog, CreateBlogDTO, UpdateBlogDTO } from '../types/models.js';
 
 export class BlogService {
-  private collection: Collection<Blog>;
-
-  constructor() {
+  private getCollection(): Collection<Blog> {
     const db = Database.getInstance().getDb();
-    this.collection = db.collection<Blog>('blogs');
+    return db.collection<Blog>('blogs');
   }
 
   async getAllBlogs(): Promise<Blog[]> {
-    return await this.collection.find().sort({ createdAt: -1 }).toArray();
+    const collection = this.getCollection();
+    return await collection.find().sort({ createdAt: -1 }).toArray();
   }
 
   async getPublishedBlogs(): Promise<Blog[]> {
-    return await this.collection
+    const collection = this.getCollection();
+    return await collection
       .find({ published: true })
       .sort({ createdAt: -1 })
       .toArray();
@@ -26,11 +26,12 @@ export class BlogService {
       return null;
     }
     
-    const blog = await this.collection.findOne({ _id: new ObjectId(id) });
+    const collection = this.getCollection();
+    const blog = await collection.findOne({ _id: new ObjectId(id) });
     
     // Incrementar vistas
     if (blog) {
-      await this.collection.updateOne(
+      await collection.updateOne(
         { _id: new ObjectId(id) },
         { $inc: { views: 1 } }
       );
@@ -40,6 +41,7 @@ export class BlogService {
   }
 
   async createBlog(blogData: CreateBlogDTO): Promise<Blog> {
+    const collection = this.getCollection();
     const newBlog: Blog = {
       ...blogData,
       views: 0,
@@ -47,7 +49,7 @@ export class BlogService {
       updatedAt: new Date()
     };
 
-    const result = await this.collection.insertOne(newBlog);
+    const result = await collection.insertOne(newBlog);
     return { ...newBlog, _id: result.insertedId };
   }
 
@@ -56,7 +58,8 @@ export class BlogService {
       return null;
     }
 
-    const result = await this.collection.findOneAndUpdate(
+    const collection = this.getCollection();
+    const result = await collection.findOneAndUpdate(
       { _id: new ObjectId(id) },
       { 
         $set: { 
@@ -75,12 +78,14 @@ export class BlogService {
       return false;
     }
 
-    const result = await this.collection.deleteOne({ _id: new ObjectId(id) });
+    const collection = this.getCollection();
+    const result = await collection.deleteOne({ _id: new ObjectId(id) });
     return result.deletedCount > 0;
   }
 
   async searchBlogs(query: string): Promise<Blog[]> {
-    return await this.collection
+    const collection = this.getCollection();
+    return await collection
       .find({
         $or: [
           { title: { $regex: query, $options: 'i' } },

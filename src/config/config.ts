@@ -14,7 +14,7 @@ interface Config {
   mongodb: MongoDBConfig;
 }
 
-export const config: Config = {
+const config: Config = {
   app: {
     port: parseInt(process.env.PORT || '3000', 10)
   },
@@ -28,3 +28,6 @@ export const config: Config = {
 if (!config.mongodb.uri) {
   throw new Error('CLOUSTER environment variable is required');
 }
+
+
+export default config;
