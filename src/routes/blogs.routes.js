@@ -1,28 +1,31 @@
 import express from "express";
-import { 
+import {
     Blogs,
     filterById,
     createNewBlog,
     updatedBlog,
-    deleteBlog
- } from "../controllers/blogs.controller.js";
-
+    deleteBlog,
+    getPublished
+} from "../controllers/blogs.controller.js";
 
 const blogs_router = express.Router();
 
-// All blogs
+// Obtener todos los blogs
 blogs_router.get("/all", Blogs);
 
-// Blog by ID
+// Obtener solo blogs publicados
+blogs_router.get("/published", getPublished);
+
+// Obtener blog por ID
 blogs_router.get("/:id", filterById);
 
-// Create new blog
+// Crear nuevo blog
 blogs_router.post("/", createNewBlog);
 
-// Update blog
+// Actualizar blog
 blogs_router.put("/:id", updatedBlog);
 
-// Delete blog
+// Eliminar blog
 blogs_router.delete("/:id", deleteBlog);
 
 export default blogs_router;
