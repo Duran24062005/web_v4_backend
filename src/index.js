@@ -4,6 +4,7 @@ import projects_router from './routes/projects.routes.js';
 import { config } from './config/config.js';
 import { isLogger } from './middlewares/logged.middleware.js';
 import { errorHandler } from './utils/errors.js';
+import cors from 'cors';
 
 const app = express();
 
@@ -13,6 +14,13 @@ app.set('port', config.app.port);
 // Body parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Habilitar CORS
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Middlewares globales
 app.use(isLogger);
