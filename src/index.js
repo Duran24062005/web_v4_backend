@@ -1,10 +1,15 @@
 import express from 'express';
+import { fileURLToPath } from 'url';
+import path from 'path';
 import blogs_router from './routes/blogs.routes.js';
 import projects_router from './routes/projects.routes.js';
 import { config } from './config/config.js';
 import { isLogger } from './middlewares/logged.middleware.js';
 import { errorHandler } from './utils/errors.js';
 import cors from 'cors';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -24,6 +29,7 @@ app.use(cors({
 
 // Middlewares globales
 app.use(isLogger);
+app.use(express.static(__dirname + '/public'));
 
 // Ruta de inicio
 app.get('/', (_req, res) => {
