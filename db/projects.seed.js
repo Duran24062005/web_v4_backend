@@ -392,7 +392,7 @@ export const projectsMockData = [
         "description": "Este es un sitio web tipo blog enfocado en rescatar, compartir y promover la identidad cultural de nuestro pueblo natal, a través de contenido multimedia, artículos, historias, costumbres, personajes históricos y actuales, además de videos y fotografías que documenten su riqueza cultural.",
         "technologies": ["TypeScript", "React.js", "Tailwind CSS"],
         "imageUrl": "https://web-v4-backend.vercel.app/33.png",
-        "demoUrl": null,
+        "demoUrl": "https://culural-vibes-web.vercel.app/",
         "repoUrl": "https://github.com/Duran24062005/vibra_cultural",
         "featured": true,
         "createdAt": "2024-09-01T00:00:00.000Z",
