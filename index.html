@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Galería Pinterest</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: #000;
+        padding: 20px;
+      }
+
+      .container {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 16px;
+        max-width: 1600px;
+        margin: 0 auto;
+      }
+
+      .gallery-item {
+        position: relative;
+        border-radius: 16px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+        break-inside: avoid;
+      }
+
+      .gallery-item:hover {
+        transform: scale(0.98);
+      }
+
+      .gallery-item img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .menu-btn {
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+        width: 32px;
+        height: 32px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        cursor: pointer;
+      }
+
+      .gallery-item:hover .menu-btn {
+        opacity: 1;
+      }
+
+      .menu-btn::after {
+        content: "⋯";
+        font-size: 20px;
+        font-weight: bold;
+        color: #111;
+      }
+
+      .gif-label {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: rgba(17, 17, 17, 0.5);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+
+      .gallery-item:hover .gif-label {
+        opacity: 1;
+      }
+
+      /* Alturas variables para simular Pinterest */
+      .gallery-item:nth-child(1) {
+        grid-row: span 1;
+      }
+      .gallery-item:nth-child(2) {
+        grid-row: span 1;
+      }
+      .gallery-item:nth-child(3) {
+        grid-row: span 2;
+      }
+      .gallery-item:nth-child(4) {
+        grid-row: span 1;
+      }
+      .gallery-item:nth-child(5) {
+        grid-row: span 1;
+      }
+      .gallery-item:nth-child(6) {
+        grid-row: span 2;
+      }
+      .gallery-item:nth-child(7) {
+        grid-row: span 1;
+      }
+      .gallery-item:nth-child(8) {
+        grid-row: span 1;
+      }
+      .gallery-item:nth-child(9) {
+        grid-row: span 2;
+      }
+      .gallery-item:nth-child(10) {
+        grid-row: span 1;
+      }
+      .gallery-item:nth-child(11) {
+        grid-row: span 1;
+      }
+      .gallery-item:nth-child(12) {
+        grid-row: span 2;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+          gap: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="gallery-item">
+        <img
+          src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809"
+          alt="Imagen 1"
+        />
+        <div class="menu-btn"></div>
+      </div>
+
+      <div class="gallery-item">
+        <img
+          src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64"
+          alt="Imagen 2"
+        />
+        <div class="menu-btn"></div>
+      </div>
+
+      <div class="gallery-item">
+        <img
+          src="https://images.unsplash.com/photo-1542831371-29b0f74f9713"
+          alt="Imagen 3"
+        />
+        <div class="gif-label">GIF</div>
+        <div class="menu-btn"></div>
+      </div>
+
+      <div class="gallery-item">
+        <img
+          src="https://images.unsplash.com/photo-1557683316-973673baf926"
+          alt="Imagen 4"
+        />
+        <div class="menu-btn"></div>
+      </div>
+
+      <div class="gallery-item">
+        <img
+          src="https://images.unsplash.com/photo-1551650975-87deedd944c3"
+          alt="Imagen 5"
+        />
+        <div class="menu-btn"></div>
+      </div>
+
+      <div class="gallery-item">
+        <img
+          src="https://images.unsplash.com/photo-1550745165-9bc0b252726f"
+          alt="Imagen 6"
+        />
+        <div class="menu-btn"></div>
+      </div>
+
+      <div class="gallery-item">
+        <img
+          src="https://images.unsplash.com/photo-1518770660439-4636190af475"
+          alt="Imagen 7"
+        />
+        <div class="menu-btn"></div>
+      </div>
+
+      <div class="gallery-item">
+        <img
+          src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6"
+          alt="Imagen 8"
+        />
+        <div class="menu-btn"></div>
+      </div>
+
+      <div class="gallery-item">
+        <img
+          src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b"
+          alt="Imagen 9"
+        />
+        <div class="menu-btn"></div>
+      </div>
+
+      <div class="gallery-item">
+        <img
+          src="https://images.unsplash.com/photo-1519389950473-47ba0277781c"
+          alt="Imagen 10"
+        />
+        <div class="menu-btn"></div>
+      </div>
+
+      <div class="gallery-item">
+        <img
+          src="https://images.unsplash.com/photo-1504639725590-34d0984388bd"
+          alt="Imagen 11"
+        />
+        <div class="menu-btn"></div>
+      </div>
+
+      <div class="gallery-item">
+        <img
+          src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97"
+          alt="Imagen 12"
+        />
+        <div class="menu-btn"></div>
+      </div>
+
+      <div class="gallery-item">
+        <img
+          src="https://images.unsplash.com/photo-1498050108023-c5249f4df085"
+          alt="Imagen 13"
+        />
+        <div class="menu-btn"></div>
+      </div>
+
+      <div class="gallery-item">
+        <img
+          src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4"
+          alt="Imagen 14"
+        />
+        <div class="menu-btn"></div>
+      </div>
+
+      <div class="gallery-item">
+        <img
+          src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655"
+          alt="Imagen 15"
+        />
+        <div class="menu-btn"></div>
+      </div>
+
+      <div class="gallery-item">
+        <img
+          src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5"
+          alt="Imagen 16"
+        />
+        <div class="menu-btn"></div>
+      </div>
+    </div>
+  </body>
+</html>
