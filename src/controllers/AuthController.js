@@ -56,12 +56,13 @@ class AuthController {
         const result = await AuthService.login(email, password);
 
         if (result) {
-            const emaildata = await sendWelcomeEmail(result.email, result.first_name, 'my_website.html')
+            const emaildata = await sendWelcomeEmail(result.user.email, result.user.first_name, 'my_website.html');
+
             // Formatear y retornar respuesta
             res.status(201).json({
                 status: 'success',
                 email: emaildata,
-                message: 'Usuario registrado exitosamente',
+                message: 'Login exitoso.',
                 data: result,
             });
         }
