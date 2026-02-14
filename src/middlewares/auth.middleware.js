@@ -1,6 +1,6 @@
 import { verifyToken, extractTokenFromHeader } from '../utils/jwt.js';
 import { AppError, asyncHandler } from '../utils/errors.js';
-import User from '../models/UserModel.js';
+import UserRepository from '../repositories/UserRepository.js';
 
 /**
  * Middleware para proteger rutas - Verifica JWT
@@ -22,7 +22,7 @@ export const protect = asyncHandler(async (req, res, next) => {
     const decoded = verifyToken(token);
 
     // Obtener usuario de la base de datos
-    const user = await User.findById(decoded.sub);
+    const user = await UserRepository.findById(decoded.sub);
 
     if (!user) {
         throw new AppError('Usuario no encontrado', 404);
@@ -33,8 +33,8 @@ export const protect = asyncHandler(async (req, res, next) => {
         throw new AppError('El usuario no está activo', 403);
     }
 
-    // Adjuntar usuario a la request
-    req.user = user;
+    // Adjuntar usuario a la request (sin contraseña)
+    req.user = UserRepository.userToJSON(user);
     req.userId = decoded.sub;
     req.userRole = decoded.role;
 
@@ -72,10 +72,10 @@ export const optionalAuth = asyncHandler(async (req, res, next) => {
     if (token) {
         try {
             const decoded = verifyToken(token);
-            const user = await User.findById(decoded.sub);
+            const user = await UserRepository.findById(decoded.sub);
 
             if (user && user.status === 'active') {
-                req.user = user;
+                req.user = UserRepository.userToJSON(user);
                 req.userId = decoded.sub;
                 req.userRole = decoded.role;
             }

@@ -8,14 +8,16 @@ import { isLogger } from './middlewares/logged.middleware.js';
 import { errorHandler } from './utils/errors.js';
 import cors from 'cors';
 import router from './routes/auth/auth.routes.js';
+import connectDB from './config/db/conection.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+const port = config.app.port;
 
 // Configuración
-app.set('port', config.app.port);
+app.set('port', port);
 
 // Body parser
 app.use(express.json());
@@ -65,9 +67,23 @@ app.all(/.*/, (req, res) => {
 app.use(errorHandler);
 
 // Iniciar servidor
-app.listen(config.app.port, () => {
-  console.log(`✅ Server running on port ${app.get('port')}`);
-  console.log(`🌐 http://localhost:${app.get('port')}`);
-});
+async function startServer() {
+  try {
+    // Conectar a MongoDB
+    await connectDB();
+
+    app.listen(port, () => {
+      console.log(`✅ Servidor corriendo en puerto ${app.get('port')}`);
+      console.log(`🌐 http://localhost:${app.get('port')}`);
+      console.log(`📚 Documentación: http://localhost:${app.get('port')}`);
+    });
+  } catch (error) {
+    console.error('❌ Error al iniciar el servidor:', error);
+    process.exit(1);
+  }
+}
+
+startServer();
+
 
 export default app;

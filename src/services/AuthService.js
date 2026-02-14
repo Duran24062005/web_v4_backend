@@ -79,19 +79,26 @@ class AuthService {
         const newUser = await UserRepository.create({
             first_name,
             last_name,
-            email,
+            email: email.toLowerCase(),
             password,
             birthdate,
             document_number,
             role: requested_role,
             status: 'pending', // Los usuarios nuevos comienzan pendientes
+            email_verified: false,
+            is_admin: false,
+            last_login: null,
         });
 
+        if (!newUser) {
+            throw new AppError('Error al crear el usuario', 500);
+        }
+
         // Generar token
-        const token = generateToken(newUser._id, newUser.role);
+        const token = generateToken(newUser._id.toString(), newUser.role);
 
         return {
-            user: newUser.toJSON(),
+            user: UserRepository.userToJSON(newUser),
             token,
         };
     }
@@ -111,8 +118,8 @@ class AuthService {
 
         // ============ BUSCAR USUARIO ============
 
-        // Incluir contraseña en la búsqueda
-        const user = await UserRepository.findByEmail(email, true);
+        // El repository retorna el usuario completo con contraseña
+        const user = await UserRepository.findByEmail(email);
 
         if (!user) {
             throw new AppError('Email o contraseña incorrectos', 401);
@@ -120,7 +127,11 @@ class AuthService {
 
         // ============ VALIDAR CONTRASEÑA ============
 
-        const isPasswordValid = await user.matchPassword(password);
+        const isPasswordValid = await UserRepository.comparePassword(
+            password,
+            user.password
+        );
+
         if (!isPasswordValid) {
             throw new AppError('Email o contraseña incorrectos', 401);
         }
@@ -136,14 +147,14 @@ class AuthService {
 
         // ============ ACTUALIZAR ÚLTIMO LOGIN ============
 
-        await UserRepository.updateLastLogin(user._id);
+        await UserRepository.updateLastLogin(user._id.toString());
 
         // ============ GENERAR TOKEN ============
 
-        const token = generateToken(user._id, user.role);
+        const token = generateToken(user._id.toString(), user.role);
 
         return {
-            user: user.toJSON(),
+            user: UserRepository.userToJSON(user),
             token,
         };
     }
@@ -178,20 +189,31 @@ class AuthService {
             throw new AppError('Usuario no encontrado', 404);
         }
 
-        // Obtener usuario con contraseña para validar
-        const userWithPassword = await UserRepository.findByEmail(user.email, true);
-
         // ============ VALIDAR CONTRASEÑA ACTUAL ============
 
-        const isPasswordValid = await userWithPassword.matchPassword(currentPassword);
+        const isPasswordValid = await UserRepository.comparePassword(
+            currentPassword,
+            user.password
+        );
+
         if (!isPasswordValid) {
             throw new AppError('La contraseña actual es incorrecta', 401);
         }
 
         // ============ ACTUALIZAR CONTRASEÑA ============
 
-        userWithPassword.password = newPassword;
-        await userWithPassword.save();
+        // Hash de la nueva contraseña
+        const bcryptjs = await import('bcryptjs');
+        const salt = await bcryptjs.default.genSalt(10);
+        const hashedPassword = await bcryptjs.default.hash(newPassword, salt);
+
+        const updatedUser = await UserRepository.update(userId, {
+            password: hashedPassword,
+        });
+
+        if (!updatedUser) {
+            throw new AppError('Error al cambiar la contraseña', 500);
+        }
 
         return {
             message: 'Contraseña actualizada exitosamente',
@@ -210,7 +232,7 @@ class AuthService {
             throw new AppError('Usuario no encontrado', 404);
         }
 
-        return user.toJSON();
+        return UserRepository.userToJSON(user);
     }
 }
 
