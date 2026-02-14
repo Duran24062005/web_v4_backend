@@ -7,6 +7,7 @@ import { config } from './config/config.js';
 import { isLogger } from './middlewares/logged.middleware.js';
 import { errorHandler } from './utils/errors.js';
 import cors from 'cors';
+import router from './routes/auth/auth.routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -45,6 +46,10 @@ app.get('/', (_req, res) => {
 });
 
 // Rutas de la API
+// Auth
+app.use('/api/auth', router)
+
+// Public
 app.use('/api/blogs', blogs_router);
 app.use('/api/projects', projects_router);
 
