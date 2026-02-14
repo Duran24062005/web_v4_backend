@@ -1,0 +1,142 @@
+import { AppError } from '../utils/errors.js';
+
+const EMAIL_API_BASE_URL = 'https://email-python-fast-api.vercel.app';
+
+/**
+ * Enviar email de bienvenida con token de verificación
+ * @param {string} email - Email del usuario
+ * @param {string} firstName - Nombre del usuario
+ * @param {string} emailToken - Token para verificar email
+ * @returns {Promise<Object>} Respuesta de la API
+ */
+export const sendWelcomeEmail = async (email, firstName, templateName) => {
+    try {
+        const emailToken = "klnñafenkjfñabfjks";
+        const verificationLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email?token=${emailToken}`;
+
+        const response = await fetch(`${EMAIL_API_BASE_URL}/emails/send`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                recipient: email,
+                subject: 'Bienvenido a mi sitio web',
+                template_name: 'my_website.html',
+                template_data: {
+                    nombre: firstName,
+                    empresa: 'Alexi Dg',
+                    verification_link: verificationLink,
+                },
+            }),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            console.error('Error sending email:', error);
+            throw new AppError(
+                'Error al enviar email de bienvenida',
+                500
+            );
+        }
+
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        console.error('Email service error:', error.message);
+        // No lanzamos error para que el registro no falle si el email falla
+        // Pero lo registramos en logs
+        return { error: error.message, sent: false };
+    }
+};
+
+/**
+ * Enviar email de aprobación de cuenta (Admin aprueba usuario)
+ * @param {string} email - Email del usuario
+ * @param {string} firstName - Nombre del usuario
+ * @param {string} role - Rol asignado
+ * @returns {Promise<Object>} Respuesta de la API
+ */
+export const sendApprovalEmail = async (email, firstName, role) => {
+    try {
+        const response = await fetch(`${EMAIL_API_BASE_URL}/emails/send`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                recipient: email,
+                subject: 'Tu cuenta en EduConnect ha sido aprobada',
+                template_name: 'account_approved',
+                template_data: {
+                    nombre: firstName,
+                    empresa: 'EduConnect',
+                    role: role === 'student' ? 'Estudiante' :
+                        role === 'teacher' ? 'Docente' :
+                            role === 'guardian' ? 'Padre/Acudiente' : role,
+                    login_link: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/login`,
+                },
+            }),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            console.error('Error sending approval email:', error);
+            throw new AppError(
+                'Error al enviar email de aprobación',
+                500
+            );
+        }
+
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        console.error('Email service error:', error.message);
+        return { error: error.message, sent: false };
+    }
+};
+
+/**
+ * Enviar email de cambio de contraseña
+ * @param {string} email - Email del usuario
+ * @param {string} firstName - Nombre del usuario
+ * @param {string} resetToken - Token para resetear contraseña
+ * @returns {Promise<Object>} Respuesta de la API
+ */
+export const sendPasswordResetEmail = async (email, firstName, resetToken) => {
+    try {
+        const resetLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`;
+
+        const response = await fetch(`${EMAIL_API_BASE_URL}/emails/send`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                recipient: email,
+                subject: 'Recupera tu contraseña en EduConnect',
+                template_name: 'password_reset',
+                template_data: {
+                    nombre: firstName,
+                    empresa: 'EduConnect',
+                    reset_link: resetLink,
+                },
+            }),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            console.error('Error sending password reset email:', error);
+            throw new AppError(
+                'Error al enviar email de recuperación de contraseña',
+                500
+            );
+        }
+
+        const result = await response.json();
+        return result;
+    } catch (error) {
+        console.error('Email service error:', error.message);
+        return { error: error.message, sent: false };
+    }
+};

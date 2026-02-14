@@ -1,5 +1,6 @@
 import { asyncHandler } from '../utils/errors.js';
 import AuthService from '../services/AuthService.js';
+import { sendWelcomeEmail } from '../services/EmailService.js';
 
 /**
  * AuthController
@@ -31,12 +32,16 @@ class AuthController {
         // Llamar al servicio (contiene la lógica)
         const result = await AuthService.register(registerData);
 
-        // Formatear y retornar respuesta
-        res.status(201).json({
-            status: 'success',
-            message: 'Usuario registrado exitosamente',
-            data: result,
-        });
+        if (result) {
+            const emaildata = await sendWelcomeEmail(registerData.email, registerData.first_name, 'My_Website.html')
+            // Formatear y retornar respuesta
+            res.status(201).json({
+                status: 'success',
+                email: emaildata,
+                message: 'Usuario registrado exitosamente',
+                data: result,
+            });
+        }
     });
 
     /**
@@ -50,12 +55,16 @@ class AuthController {
         // Llamar al servicio
         const result = await AuthService.login(email, password);
 
-        // Responder
-        res.status(200).json({
-            status: 'success',
-            message: 'Login exitoso',
-            data: result,
-        });
+        if (result) {
+            const emaildata = await sendWelcomeEmail(result.email, result.first_name, 'my_website.html')
+            // Formatear y retornar respuesta
+            res.status(201).json({
+                status: 'success',
+                email: emaildata,
+                message: 'Usuario registrado exitosamente',
+                data: result,
+            });
+        }
     });
 
     /**

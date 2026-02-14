@@ -1,20 +1,45 @@
-import User from '../models/UserModel.js';
+import { ObjectId } from 'mongodb';
+import bcryptjs from 'bcryptjs';
+import connectDB from '../config/db/conection.js';
 
 /**
- * UserRepository
+ * UserRepository - Usando driver oficial de MongoDB
  * Capa de acceso a datos (Data Access Layer)
  * Responsabilidad: SOLO operaciones con la base de datos (CRUD)
  * No contiene lógica de negocio, NO valida datos
  */
 class UserRepository {
+    constructor() {
+        this.collectionName = 'users';
+    }
+
+    /**
+     * Obtiene la colección de usuarios
+     */
+    async getCollection() {
+        const db = await connectDB();
+        return db.collection(this.collectionName);
+    }
+
     /**
      * Crear un nuevo usuario
      * @param {Object} userData - Datos del usuario
      * @returns {Promise<Object>} Usuario creado
      */
     async create(userData) {
-        const user = new User(userData);
-        return await user.save();
+        const collection = await this.getCollection();
+
+        // Hash de la contraseña
+        const salt = await bcryptjs.genSalt(10);
+        userData.password = await bcryptjs.hash(userData.password, salt);
+
+        // Agregar timestamps
+        userData.createdAt = new Date();
+        userData.updatedAt = new Date();
+
+        const result = await collection.insertOne(userData);
+
+        return await this.findById(result.insertedId.toString());
     }
 
     /**
@@ -23,21 +48,29 @@ class UserRepository {
      * @returns {Promise<Object|null>} Usuario o null
      */
     async findById(id) {
-        return await User.findById(id);
+        const collection = await this.getCollection();
+
+        try {
+            const user = await collection.findOne({ _id: new ObjectId(id) });
+            return user;
+        } catch (error) {
+            return null;
+        }
     }
 
     /**
      * Obtener usuario por email
      * @param {string} email - Email del usuario
-     * @param {boolean} includePassword - Incluir contraseña
-     * @returns {Promise<Object|null>} Usuario o null
+     * @returns {Promise<Object|null>} Usuario o null (incluye contraseña)
      */
-    async findByEmail(email, includePassword = false) {
-        const query = User.findOne({ email });
-        if (includePassword) {
-            query.select('+password');
-        }
-        return await query;
+    async findByEmail(email) {
+        const collection = await this.getCollection();
+
+        const user = await collection.findOne({
+            email: email.toLowerCase()
+        });
+
+        return user;
     }
 
     /**
@@ -46,7 +79,13 @@ class UserRepository {
      * @returns {Promise<Object|null>} Usuario o null
      */
     async findByDocumentNumber(documentNumber) {
-        return await User.findOne({ document_number: documentNumber });
+        const collection = await this.getCollection();
+
+        const user = await collection.findOne({
+            document_number: documentNumber
+        });
+
+        return user;
     }
 
     /**
@@ -57,14 +96,17 @@ class UserRepository {
      * @returns {Promise<{users: Array, total: number}>}
      */
     async findAll(filters = {}, page = 1, limit = 10) {
+        const collection = await this.getCollection();
         const skip = (page - 1) * limit;
 
-        const users = await User.find(filters)
+        const users = await collection
+            .find(filters)
             .limit(limit)
             .skip(skip)
-            .sort({ createdAt: -1 });
+            .sort({ createdAt: -1 })
+            .toArray();
 
-        const total = await User.countDocuments(filters);
+        const total = await collection.countDocuments(filters);
 
         return { users, total };
     }
@@ -74,29 +116,55 @@ class UserRepository {
      * @returns {Promise<Array>} Usuarios pendientes
      */
     async findPending() {
-        return await User.find({ status: 'pending' }).sort({ createdAt: -1 });
+        const collection = await this.getCollection();
+
+        return await collection
+            .find({ status: 'pending' })
+            .sort({ createdAt: -1 })
+            .toArray();
     }
 
     /**
      * Actualizar usuario
      * @param {string} id - ID del usuario
      * @param {Object} updateData - Datos a actualizar
-     * @returns {Promise<Object>} Usuario actualizado
+     * @returns {Promise<Object|null>} Usuario actualizado o null
      */
     async update(id, updateData) {
-        return await User.findByIdAndUpdate(id, updateData, {
-            new: true,
-            runValidators: true,
-        });
+        const collection = await this.getCollection();
+
+        // Actualizar timestamp
+        updateData.updatedAt = new Date();
+
+        try {
+            await collection.updateOne(
+                { _id: new ObjectId(id) },
+                { $set: updateData }
+            );
+
+            return await this.findById(id);
+        } catch (error) {
+            return null;
+        }
     }
 
     /**
      * Eliminar usuario
      * @param {string} id - ID del usuario
-     * @returns {Promise<Object>} Usuario eliminado
+     * @returns {Promise<boolean>} True si se eliminó, false si no
      */
     async delete(id) {
-        return await User.findByIdAndDelete(id);
+        const collection = await this.getCollection();
+
+        try {
+            const result = await collection.deleteOne({
+                _id: new ObjectId(id)
+            });
+
+            return result.deletedCount > 0;
+        } catch (error) {
+            return false;
+        }
     }
 
     /**
@@ -105,7 +173,12 @@ class UserRepository {
      * @returns {Promise<boolean>}
      */
     async emailExists(email) {
-        const user = await User.findOne({ email });
+        const collection = await this.getCollection();
+
+        const user = await collection.findOne({
+            email: email.toLowerCase()
+        });
+
         return user !== null;
     }
 
@@ -115,7 +188,12 @@ class UserRepository {
      * @returns {Promise<boolean>}
      */
     async documentExists(documentNumber) {
-        const user = await User.findOne({ document_number: documentNumber });
+        const collection = await this.getCollection();
+
+        const user = await collection.findOne({
+            document_number: documentNumber
+        });
+
         return user !== null;
     }
 
@@ -125,7 +203,8 @@ class UserRepository {
      * @returns {Promise<number>}
      */
     async countByRole(role) {
-        return await User.countDocuments({ role });
+        const collection = await this.getCollection();
+        return await collection.countDocuments({ role });
     }
 
     /**
@@ -134,20 +213,46 @@ class UserRepository {
      * @returns {Promise<number>}
      */
     async countByStatus(status) {
-        return await User.countDocuments({ status });
+        const collection = await this.getCollection();
+        return await collection.countDocuments({ status });
     }
 
     /**
      * Actualizar último login
      * @param {string} id - ID del usuario
-     * @returns {Promise<Object>}
+     * @returns {Promise<Object|null>}
      */
     async updateLastLogin(id) {
-        return await User.findByIdAndUpdate(
-            id,
-            { last_login: new Date() },
-            { new: true }
+        const collection = await this.getCollection();
+
+        await collection.updateOne(
+            { _id: new ObjectId(id) },
+            { $set: { last_login: new Date(), updatedAt: new Date() } }
         );
+
+        return await this.findById(id);
+    }
+
+    /**
+     * Comparar contraseña con hash
+     * @param {string} password - Contraseña en texto plano
+     * @param {string} hashedPassword - Contraseña hasheada
+     * @returns {Promise<boolean>}
+     */
+    async comparePassword(password, hashedPassword) {
+        return await bcryptjs.compare(password, hashedPassword);
+    }
+
+    /**
+     * Obtener usuario sin campos sensibles
+     * @param {Object} user - Documento del usuario
+     * @returns {Object} Usuario sin contraseña
+     */
+    userToJSON(user) {
+        if (!user) return null;
+
+        const { password, ...userWithoutPassword } = user;
+        return userWithoutPassword;
     }
 }
 
